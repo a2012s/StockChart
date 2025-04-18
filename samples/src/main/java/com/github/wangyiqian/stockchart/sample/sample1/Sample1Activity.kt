@@ -23,7 +23,8 @@ import com.github.wangyiqian.stockchart.childchart.timebar.TimeBarFactory
 import com.github.wangyiqian.stockchart.entities.IKEntity
 import com.github.wangyiqian.stockchart.sample.DataMock
 import com.github.wangyiqian.stockchart.sample.R
-import kotlinx.android.synthetic.main.activity_sample1.*
+import com.github.wangyiqian.stockchart.sample.databinding.ActivitySample1Binding
+
 
 /**
  * @author wangyiqian E-mail: wangyiqian9891@gmail.com
@@ -31,12 +32,16 @@ import kotlinx.android.synthetic.main.activity_sample1.*
  */
 class Sample1Activity : AppCompatActivity() {
 
+    private lateinit var binding: ActivitySample1Binding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sample1)
+        binding = ActivitySample1Binding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // 总配置
         val stockChartConfig = StockChartConfig()
+       val stock_chart=binding.stockChart
         stock_chart.setConfig(stockChartConfig)
 
         // K线图的配置与工厂

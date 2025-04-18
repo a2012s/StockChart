@@ -23,12 +23,14 @@ import com.github.wangyiqian.stockchart.entities.IKEntity
 import com.github.wangyiqian.stockchart.entities.KEntity
 import com.github.wangyiqian.stockchart.sample.DataMock
 import com.github.wangyiqian.stockchart.sample.R
+import com.github.wangyiqian.stockchart.sample.databinding.ActivitySample2Binding
+import com.github.wangyiqian.stockchart.sample.databinding.ActivitySample3Binding
 import com.github.wangyiqian.stockchart.sample.sample3.activechart.ActiveChartConfig
 import com.github.wangyiqian.stockchart.sample.sample3.activechart.ActiveChartFactory
 import com.github.wangyiqian.stockchart.sample.sample3.activechart.OnActiveIndustryClickListener
 import com.github.wangyiqian.stockchart.sample.sample3.data.ActiveInfo
 import com.github.wangyiqian.stockchart.util.DimensionUtil
-import kotlinx.android.synthetic.main.activity_sample3.*
+
 import java.util.*
 
 /**
@@ -48,6 +50,8 @@ class Sample3Activity : AppCompatActivity() {
      */
     private val stockChartConfig = StockChartConfig()
 
+    private lateinit var binding: ActivitySample3Binding
+
     /**
      * 异动K线图的配置
      */
@@ -55,7 +59,9 @@ class Sample3Activity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sample3)
+      //  setContentView(R.layout.activity_sample3)
+        binding = ActivitySample3Binding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initStockChart()
 
@@ -121,10 +127,10 @@ class Sample3Activity : AppCompatActivity() {
         )
 
         stockChartConfig.apply {
-            stockChart.setConfig(this)
+            binding.stockChart.setConfig(this)
             // 图的背景色
             backgroundColor = Color.parseColor("#FFFFFF")
-            addChildCharts(ActiveChartFactory(stockChart, activeChartConfig))
+            addChildCharts(ActiveChartFactory(binding.stockChart, activeChartConfig))
         }
     }
 
@@ -143,7 +149,7 @@ class Sample3Activity : AppCompatActivity() {
                 }
             }
             stockChartConfig.setKEntities(kEntities)
-            stockChart.notifyChanged()
+            binding.stockChart.notifyChanged()
         }
     }
 }

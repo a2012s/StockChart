@@ -39,13 +39,13 @@ import com.github.wangyiqian.stockchart.listener.OnLoadMoreListener
 import com.github.wangyiqian.stockchart.sample.DataMock
 import com.github.wangyiqian.stockchart.sample.Util
 import com.github.wangyiqian.stockchart.sample.R
+import com.github.wangyiqian.stockchart.sample.databinding.ActivitySample1Binding
+import com.github.wangyiqian.stockchart.sample.databinding.ActivitySample2Binding
 import com.github.wangyiqian.stockchart.sample.sample2.custom.CustomChartConfig
 import com.github.wangyiqian.stockchart.sample.sample2.custom.CustomChartFactory
 import com.github.wangyiqian.stockchart.util.DimensionUtil
 import com.github.wangyiqian.stockchart.util.NumberFormatUtil
-import kotlinx.android.synthetic.main.activity_sample2.*
-import kotlinx.android.synthetic.main.activity_sample3.*
-import kotlinx.android.synthetic.main.layout_sample2_option_buttons.*
+
 
 /**
  * @author wangyiqian E-mail: wangyiqian9891@gmail.com
@@ -110,9 +110,13 @@ class Sample2Activity : AppCompatActivity() {
 
     private var isLoading = false
 
+    private lateinit var binding: ActivitySample2Binding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sample2)
+//        setContentView(R.layout.activity_sample2)
+        binding = ActivitySample2Binding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // StockChart初始化
         initStockChart()
@@ -186,14 +190,14 @@ class Sample2Activity : AppCompatActivity() {
 
 
         // 绑定配置
-        stock_chart.setConfig(stockChartConfig)
+        binding.stockChart.setConfig(stockChartConfig)
     }
 
     /**
      * K线图初始化
      */
     private fun initKChart() {
-        kChartFactory = KChartFactory(stock_chart, kChartConfig)
+        kChartFactory = KChartFactory(binding.stockChart, kChartConfig)
 
         kChartConfig.apply {
 
@@ -205,7 +209,7 @@ class Sample2Activity : AppCompatActivity() {
                 override fun onHighlightBegin() {}
 
                 override fun onHighlightEnd() {
-                    tv_highlight_info.text = ""
+                    binding.tvHighlightInfo.text = ""
                 }
 
                 override fun onHighlight(highlight: Highlight) {
@@ -218,7 +222,7 @@ class Sample2Activity : AppCompatActivity() {
                         if (kEntity.containFlag(FLAG_EMPTY)) {
                             showContent = ""
                         } else if (kChartType is KChartConfig.KChartType.LINE || kChartType is KChartConfig.KChartType.MOUNTAIN) {
-                            val firstIdx = stock_chart.findFirstNotEmptyKEntityIdxInDisplayArea()
+                            val firstIdx = binding.stockChart.findFirstNotEmptyKEntityIdxInDisplayArea()
                             val price =
                                 "最新价:${NumberFormatUtil.formatPrice(kEntity.getClosePrice())}"
                             var changeRatio = "涨跌幅:——"
@@ -254,7 +258,8 @@ class Sample2Activity : AppCompatActivity() {
                     }
 
                     // 长按信息显示到界面
-                    tv_highlight_info.text = showContent
+                    //tv_highlight_info 
+                    binding.tvHighlightInfo.text = showContent
                 }
             }
 
@@ -289,7 +294,7 @@ class Sample2Activity : AppCompatActivity() {
      * 成交量图初始化
      */
     private fun initVolumeChart() {
-        volumeChartFactory = VolumeChartFactory(stock_chart, volumeChartConfig)
+        volumeChartFactory = VolumeChartFactory(binding.stockChart, volumeChartConfig)
 
         volumeChartConfig.apply {
             // 图高度
@@ -317,7 +322,7 @@ class Sample2Activity : AppCompatActivity() {
      * 时间条图初始化
      */
     private fun initTimeBar() {
-        timeBarFactory = TimeBarFactory(stock_chart, timeBarConfig)
+        timeBarFactory = TimeBarFactory(binding.stockChart, timeBarConfig)
 
         timeBarConfig.apply {
             // 背景色（时间条这里不像显示网格线，加个背景色覆盖掉）
@@ -333,7 +338,7 @@ class Sample2Activity : AppCompatActivity() {
      * macd指标图初始化
      */
     private fun initMacdChart() {
-        macdChartFactory = MacdChartFactory(stock_chart, macdChartConfig)
+        macdChartFactory = MacdChartFactory(binding.stockChart, macdChartConfig)
 
         macdChartConfig.apply {
             // 图高度
@@ -352,7 +357,7 @@ class Sample2Activity : AppCompatActivity() {
      * kdj指标图初始化
      */
     private fun initKdjChart() {
-        kdjChartFactory = KdjChartFactory(stock_chart, kdjChartConfig)
+        kdjChartFactory = KdjChartFactory(binding.stockChart, kdjChartConfig)
 
         kdjChartConfig.apply {
             // 图高度
@@ -371,7 +376,7 @@ class Sample2Activity : AppCompatActivity() {
      * rsi指标图初始化
      */
     private fun initRsiChart() {
-        rsiChartFactory = RsiChartFactory(stock_chart, rsiChartConfig)
+        rsiChartFactory = RsiChartFactory(binding.stockChart, rsiChartConfig)
 
         rsiChartConfig.apply {
             // 图高度
@@ -390,7 +395,7 @@ class Sample2Activity : AppCompatActivity() {
      * 自定义示例图初始化
      */
     private fun initCustomChart() {
-        customChartFactory = CustomChartFactory(stock_chart, customChartConfig)
+        customChartFactory = CustomChartFactory(binding.stockChart, customChartConfig)
         customChartConfig.apply {
             height = DimensionUtil.dp2px(this@Sample2Activity, 50f)
             bigLabel = "这是自定义子图示例"
@@ -427,7 +432,7 @@ class Sample2Activity : AppCompatActivity() {
                 timeBarConfig.type = timeBarType
 
                 // 通知更新
-                stock_chart.notifyChanged()
+                binding.stockChart.notifyChanged()
                 currentPage = page
             } else {
                 Toast.makeText(this, "没有更多数据了！", Toast.LENGTH_SHORT).show()
@@ -566,25 +571,25 @@ class Sample2Activity : AppCompatActivity() {
         // 成交量图根据K线图类型决定是空心还是实心
         volumeChartConfig.volumeChartType =
             if (this.kChartType is KChartConfig.KChartType.HOLLOW) VolumeChartConfig.VolumeChartType.HOLLOW() else VolumeChartConfig.VolumeChartType.CANDLE()
-        stock_chart.notifyChanged()
+        binding.stockChart.notifyChanged()
         refreshOptionButtonsState()
     }
 
     private fun initPeriodButtons() {
         periodOptionButtons.putAll(
             arrayOf(
-                Pair(period_day, Period.DAY),
-                Pair(period_five_days, Period.FIVE_DAYS),
-                Pair(period_week, Period.WEEK),
-                Pair(period_month, Period.MONTH),
-                Pair(period_quarter, Period.QUARTER),
-                Pair(period_year, Period.YEAR),
-                Pair(period_five_years, Period.FIVE_YEARS),
-                Pair(period_ytd, Period.YTD),
-                Pair(period_one_minute, Period.ONE_MINUTE),
-                Pair(period_five_minutes, Period.FIVE_MINUTES),
-                Pair(period_sixty_minutes, Period.SIXTY_MINUTES),
-                Pair(period_day_time, Period.DAY_TIME)
+                Pair(binding.buttons.periodDay, Period.DAY),
+                Pair(binding.buttons.periodFiveDays, Period.FIVE_DAYS),
+                Pair(binding.buttons.periodWeek, Period.WEEK),
+                Pair(binding.buttons.periodMonth, Period.MONTH),
+                Pair(binding.buttons.periodQuarter, Period.QUARTER),
+                Pair(binding.buttons.periodYear, Period.YEAR),
+                Pair(binding.buttons.periodFiveYears, Period.FIVE_YEARS),
+                Pair(binding.buttons.periodYtd, Period.YTD),
+                Pair(binding.buttons.periodOneMinute, Period.ONE_MINUTE),
+                Pair(binding.buttons.periodFiveMinutes, Period.FIVE_MINUTES),
+                Pair(binding.buttons.periodSixtyMinutes, Period.SIXTY_MINUTES),
+                Pair(binding.buttons.periodDayTime, Period.DAY_TIME)
             )
         )
 
@@ -596,11 +601,11 @@ class Sample2Activity : AppCompatActivity() {
     private fun initKChartTypeButtons() {
         kChartTypeOptionButtons.putAll(
             listOf(
-                Pair(kchart_type_candle, KChartConfig.KChartType.CANDLE()),
-                Pair(kchart_type_hollow, KChartConfig.KChartType.HOLLOW()),
-                Pair(kchart_type_line, KChartConfig.KChartType.LINE()),
-                Pair(kchart_type_mountain, KChartConfig.KChartType.MOUNTAIN()),
-                Pair(kchart_type_bar, KChartConfig.KChartType.BAR())
+                Pair(binding.buttons.kchartTypeCandle, KChartConfig.KChartType.CANDLE()),
+                Pair(binding.buttons.kchartTypeHollow, KChartConfig.KChartType.HOLLOW()),
+                Pair(binding.buttons.kchartTypeLine, KChartConfig.KChartType.LINE()),
+                Pair(binding.buttons.kchartTypeMountain, KChartConfig.KChartType.MOUNTAIN()),
+                Pair(binding.buttons.kchartTypeBar, KChartConfig.KChartType.BAR())
             )
         )
         kChartTypeOptionButtons.forEach { (button, kChatType) ->
@@ -611,12 +616,12 @@ class Sample2Activity : AppCompatActivity() {
     private fun initIndexButtons() {
         indexOptionButton.putAll(
             listOf(
-                Pair(index_ma, Index.MA()),
-                Pair(index_ema, Index.EMA()),
-                Pair(index_boll, Index.BOLL()),
-                Pair(index_macd, Index.MACD()),
-                Pair(index_kdj, Index.KDJ()),
-                Pair(index_rsi, Index.RSI())
+                Pair(binding.buttons.indexMa, Index.MA()),
+                Pair(binding.buttons.indexEma, Index.EMA()),
+                Pair(binding.buttons.indexBoll, Index.BOLL()),
+                Pair(binding.buttons.indexMacd, Index.MACD()),
+                Pair(binding.buttons.indexKdj, Index.KDJ()),
+                Pair(binding.buttons.indexRsi, Index.RSI())
             )
         )
 
@@ -657,20 +662,20 @@ class Sample2Activity : AppCompatActivity() {
                         }
                     }
                 }
-                stock_chart.notifyChanged()
+                binding.stockChart.notifyChanged()
                 refreshOptionButtonsState()
             }
         }
     }
 
     private fun initCustomChartButtons() {
-        custom.setOnClickListener {
+        binding.buttons.custom.setOnClickListener {
             if (stockChartConfig.childChartFactories.contains(customChartFactory!!)) {
                 stockChartConfig.removeChildCharts(customChartFactory!!)
             } else {
                 stockChartConfig.addChildCharts(customChartFactory!!)
             }
-            stock_chart.notifyChanged()
+            binding.stockChart.notifyChanged()
             refreshOptionButtonsState()
         }
     }
@@ -706,6 +711,6 @@ class Sample2Activity : AppCompatActivity() {
             }
         }
 
-        custom.isSelected = stockChartConfig.childChartFactories.contains(customChartFactory!!)
+        binding.buttons.custom.isSelected = stockChartConfig.childChartFactories.contains(customChartFactory!!)
     }
 }
